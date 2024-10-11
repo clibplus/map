@@ -6,8 +6,14 @@
 
 Map NewMap() {
 	Map m = { 
-		.arr 	= (void **)malloc(sizeof(void *) * 1),
-		.idx 	= 0
+		.arr 		= (void **)malloc(sizeof(void *) * 1),
+		.idx 		= 0,
+
+		.InMap		= InMap,
+		.Get		= GetKey,
+		.GetValue	= GetKeyValue,
+		.Append		= AppendKey,
+		.Destruct	= DestroyMap
 	};
 
 	return m;
@@ -73,4 +79,22 @@ int AppendKey(Map *m, const char *k, const char *v) {
 	m->idx++;
 	m->arr = (void **)realloc(m->arr, sizeof(void *) * (m->idx + 1));
 	return 1;
+}
+
+void DestroyMap(Map *m) {
+	if(!m)
+		return;
+
+	if(m->arr) {
+		for(int i = 0; i < m->idx; i++) {
+			if(m->arr[i]) {
+				(void)(!((Key *)m->arr[i])->key ? 0 : free(((Key *)m->arr[i])->key));
+				(void)(!((Key *)m->arr[i])->value ? 0 : free(((Key *)m->arr[i])->value));
+				free(m->arr[i]);
+			}
+		}
+	}
+
+	free(m);
+	m = NULL;
 }
