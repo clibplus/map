@@ -5,6 +5,12 @@ typedef struct Key {
 	char	*value;
 } Key;
 
+typedef struct jKey {
+	char 	*structure;
+	char 	*key;
+	char 	*value;
+} jKey;
+
 typedef struct Map {
 	void	**arr;
 	long 	idx;
@@ -50,3 +56,10 @@ int 		AppendKey(Map *m, const char *k, const char *v);
 // 			| - > Destruct the struct
 //
 void 		DestroyMap(Map *m);
+
+
+// == [ json.c ] ==
+
+int AppendJSONKey(Map *m, const char *structure, const char *k, const char *v);
+Map Decode_OneLine_JSON(const char *data);
+Map DecodeJSON(const char *data);

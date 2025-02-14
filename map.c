@@ -94,7 +94,4 @@ void DestroyMap(Map *m) {
 			}
 		}
 	}
-
-	free(m);
-	m = NULL;
 }
