@@ -10,6 +10,7 @@ Map NewMap() {
 		.idx 		= 0,
 
 		.InMap		= InMap,
+		.InKey 		= KeyContains,
 		.Get		= GetKey,
 		.GetValue	= GetKeyValue,
 		.Append		= AppendKey,
@@ -28,6 +29,17 @@ int InMap(Map *m, const char *q) {
 			return i;
 	}
 
+	return -1;
+}
+
+int KeyContains(Map *m, const char *q) {
+	if(!m || !q)
+		return -1;
+
+	for(int i = 0; i < m->idx; i++)
+		if(strstr(((Key *)m->arr[i])->key, q))
+			return i;
+	
 	return -1;
 }
 

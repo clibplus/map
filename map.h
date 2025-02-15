@@ -16,6 +16,7 @@ typedef struct Map {
 	long 	idx;
 
 	int		(*InMap)	(struct Map *m, const char *q);
+	int 	(*InKey)	(struct Map *m, const char *q);
 	Key		*(*Get)		(struct Map *m, const char *q);
 	char 	*(*GetValue)(struct Map *m, const char *q);
 	int		(*Append)	(struct Map *m, const char *k, const char *v);
@@ -33,6 +34,12 @@ Map 		NewMap();
 //			| - > Returns > 0 upon success or -1 upon failure
 //
 int 		InMap(Map *m, const char *q);
+
+//
+//
+//
+//
+int  		KeyContains(Map *m, const char *q);
 
 //
 //			| - > Get a key struct with key information
