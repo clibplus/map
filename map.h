@@ -20,6 +20,7 @@ typedef struct Map {
 	Key		*(*Get)		(struct Map *m, const char *q);
 	char 	*(*GetValue)(struct Map *m, const char *q);
 	int		(*Append)	(struct Map *m, const char *k, const char *v);
+	int 	(*AppendJ)	(struct Map *m, const char *structure, const char *k, const char *v);
 	void	(*Destruct)	(struct Map *m);
 } Map;
 

@@ -14,6 +14,7 @@ Map NewMap() {
 		.Get		= GetKey,
 		.GetValue	= GetKeyValue,
 		.Append		= AppendKey,
+		.AppendJ 	= AppendJSONKey,
 		.Destruct	= DestroyMap
 	};
 
@@ -99,11 +100,16 @@ void DestroyMap(Map *m) {
 
 	if(m->arr) {
 		for(int i = 0; i < m->idx; i++) {
-			if(m->arr[i]) {
-				(void)(!((Key *)m->arr[i])->key ? 0 : free(((Key *)m->arr[i])->key));
-				(void)(!((Key *)m->arr[i])->value ? 0 : free(((Key *)m->arr[i])->value));
-				free(m->arr[i]);
-			}
+			if(!m->arr[i])
+				break;
+			
+			(void)(!((Key *)m->arr[i])->key ? 0 : free(((Key *)m->arr[i])->key));
+			(void)(!((Key *)m->arr[i])->value ? 0 : free(((Key *)m->arr[i])->value));
+			free(m->arr[i]);
 		}
+
+		free(m->arr);
 	}
+
+	free(m);
 }

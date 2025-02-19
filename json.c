@@ -3,6 +3,8 @@
 #include <stdlib.h>
 
 #include "map.h"
+#include <str.h>
+#include <arr.h>
 
 int AppendJSONKey(Map *m, const char *structure, const char *k, const char *v) {
 	if(!m || !k || !v)
@@ -27,7 +29,7 @@ int AppendJSONKey(Map *m, const char *structure, const char *k, const char *v) {
 Map Decode_OneLine_JSON(const char *data) {
     String raw = NewString(data);
     if(raw.Contains(&raw, ",")) {
-        raw.Replace(&raw_json, ",", ",\n");
+        raw.Replace(&raw, ",", ",\n");
     }
 
     raw.Replace(&raw, "{", "{\n");
@@ -49,7 +51,7 @@ Map DecodeJSON(const char *data) {
         return (Map){0};
 
     String structure_path = NewString("parent");
-    String structure_path = NewString("/");
+    String structure = NewString("/");
     for(int i = 0; i < lines.idx; i++) {
         if(!lines.arr[i])
             break;
@@ -59,7 +61,8 @@ Map DecodeJSON(const char *data) {
 
         if(line.Contains(&line, "}") || line.Is(&line, "}")) {
             structure_path.Replace(&structure_path, structure.data, "/");
-            structure.Set("/");
+            structure.Clear(&structure);
+            structure.AppendString(&structure, "/");
         }
 
         Array args = NewArray(NULL);
@@ -76,18 +79,19 @@ Map DecodeJSON(const char *data) {
         key.TrimAt(&key, key.idx - 1);
         key.Strip(&key);
 
-        value.Trim(value, ','); // @ EOL
+        value.Trim(&value, ','); // @ EOL
         value.Strip(&value);
 
-        if(value.Is(&value, "{") || value.data[value.idx - 2] == "{") {
-            structure_path.AppendArray(&structure_path, (const char *[]){"/", key->data, NULL});
-            structure.Set("/");
-            structure.AppendString(&structure, key->data);
+        if(value.Is(&value, "{") || value.data[value.idx - 2] == '{') {
+            structure_path.AppendArray(&structure_path, (const char *[]){"/", key.data, NULL});
+            structure.Clear(&structure);
+            structure.AppendString(&structure, "/");
+            structure.AppendString(&structure, key.data);
         }
 
         // Type Detection
 
-        AppendJSONKey(&json, key.data, value.data);
+        AppendJSONKey(&json, structure_path.data, key.data, value.data);
 
         key.Destruct(&key);
         value.Destruct(&key);
