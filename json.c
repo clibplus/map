@@ -28,16 +28,57 @@ int AppendJSONKey(Map *m, const char *structure, const char *k, const char *v) {
 
 Map Decode_OneLine_JSON(const char *data) {
     String raw = NewString(data);
-    if(raw.Contains(&raw, ",")) {
-        raw.Replace(&raw, ",", ",\n");
+    raw.TrimAt(&raw, 0);
+    raw.TrimAt(&raw, 0);
+    raw.TrimAt(&raw, raw.idx - 1);
+
+    Array fields = NewArray(NULL);
+    fields.Merge(&fields, (void **)raw.Split(&raw, ","));
+
+    Map json = NewMap();
+
+    for(int i = 0; i < fields.idx; i++) {
+        if(!fields.arr[i])
+            break;
+
+        String field = NewString(fields.arr[i]);
+        int pos = -1;
+        while((pos = field.FindChar(&field, '"')) != -1) 
+            field.Trim(&field, '"');
+
+        Array args = NewArray(NULL);
+        args.Merge(&args, (void **)field.Split(&field, ":"));
+
+        if(args.idx < 2) {
+            args.Destruct(&args);
+            field.Destruct(&field);
+            continue;
+        }
+
+        if(args.idx > 2) {
+            String new_value = NewString(field.data);
+            int len = strlen(args.arr[0]);
+
+            for(int q = 0; q < len; q++)
+                new_value.TrimAt(&new_value, 0);
+
+            AppendJSONKey(&json, "/", args.arr[0], new_value.data);
+            args.Destruct(&args);
+            field.Destruct(&field);
+            new_value.Destruct(&new_value);
+            continue;
+        }
+
+        AppendJSONKey(&json, "/", args.arr[0], args.arr[1]);
+        args.Destruct(&args);
+        field.Destruct(&field);
     }
 
-    raw.Replace(&raw, "{", "{\n");
-    raw.Replace(&raw, "}", "\n}");
+    if(json.idx > 0)
+        return json;
 
-    Map json = DecodeJSON(data);
-    raw.Destruct(&raw);
-    return json;
+    json.Destruct(&json);
+    return NewMap();
 }
 
 Map DecodeJSON(const char *data) {
@@ -67,12 +108,14 @@ Map DecodeJSON(const char *data) {
 
         Array args = NewArray(NULL);
         args.Merge(&args, (void **)line.Split(&line, ":"));
+        printf("%ld\n", args.idx);
         if(args.idx != 2) {
             line.Destruct(&line);
             args.Destruct(&args);
             continue;
         }
 
+        printf("HERE\n");
         String key = NewString(args.arr[0]), value = NewString(args.arr[1]);
 
         key.TrimAt(&key, 0);

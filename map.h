@@ -20,6 +20,7 @@ typedef struct Map {
 	char 	*(*GetValue)(struct Map *m, const char *q);
 	int		(*Append)	(struct Map *m, const char *k, const char *v);
 	int 	(*AppendJ)	(struct Map *m, const char *structure, const char *k, const char *v);
+	int		(*Merge)	(struct Map *m, struct Map *newm);
 	void	(*Destruct)	(struct Map *m);
 } Map;
 
@@ -49,9 +50,15 @@ char 		*GetKeyValue(Map *m, const char *q);
 
 //
 //			| - > Append a key with value to the map
-//			| - > Returns 1 upon success and 0 upon failure
+//			| - > Returns 1 upon success or 0 upon failure
 //
 int 		AppendKey(Map *m, const char *k, const char *v);
+
+//
+//			| - > Merge a new map into the current map
+//			| - > Returns 1 upon success or 0 upon failure!
+//
+int 		Map__Merge(Map *m, Map *newm);
 
 //
 // 			| - > Destruct the struct

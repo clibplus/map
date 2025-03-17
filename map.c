@@ -14,6 +14,7 @@ Map NewMap() {
 		.GetValue	= GetKeyValue,
 		.Append		= AppendKey,
 		.AppendJ 	= AppendJSONKey,
+		.Merge		= Map__Merge,
 		.Destruct	= DestroyMap
 	};
 
@@ -27,6 +28,9 @@ int InMap(Map *m, const char *q) {
 	for(int i = 0; i < m->idx; i++) {
 		if(!strcmp(((Key *)m->arr[i])->key, q))
 			return i;
+
+        if(strstr(((Key *)m->arr[i])->key, q))
+            return i;
 	}
 
 	return -1;
@@ -79,6 +83,22 @@ int AppendKey(Map *m, const char *k, const char *v) {
 	m->arr[m->idx] = key;
 	m->idx++;
 	m->arr = (void **)realloc(m->arr, sizeof(void *) * (m->idx + 1));
+	m->arr[m->idx] = NULL;
+	
+	return 1;
+}
+
+int Map__Merge(Map *m, Map *newm) {
+	if(!m || !newm) 
+		return 0;
+
+	for(int i = 0; i < newm->idx; i++) {
+		if(!newm->arr[i])
+			break;
+
+		AppendKey(m, ((Key *)newm->arr[i])->key, ((Key *)newm->arr[i])->value);
+	}
+
 	return 1;
 }
 
