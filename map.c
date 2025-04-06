@@ -44,7 +44,7 @@ Key *GetKey(Map *m, const char *q) {
 		if(!m->arr[i])
 			break;
 
-		if(!strcmp(((Key *)m->arr[i])->key, q))
+		if(!strcmp(((Key *)m->arr[i])->key, q) || strstr(((Key *)m->arr[i])->key, q))
 			return m->arr[i];
 	}
 

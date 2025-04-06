@@ -115,7 +115,6 @@ Map DecodeJSON(const char *data) {
             continue;
         }
 
-        printf("HERE\n");
         String key = NewString(args.arr[0]), value = NewString(args.arr[1]);
 
         key.TrimAt(&key, 0);
